@@ -9,12 +9,21 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.post('/webhook', async (req, res) => {
-    let reply_token = req.body.events[0].replyToken
-    let msg = req.body.events[0].message.text.toLowerCase();
-    const textsum = await aigen(msg)
-    console.log(textsum)
-    reply(reply_token, textsum)
-    res.sendStatus(200)
+    try{
+        let reply_token = req.body.events[0].replyToken
+        if(req.body.events[0].message.text){
+            let msg = req.body.events[0].message.text.toLowerCase();
+            msg = msg.trim()
+            const textsum = await aigen(msg)
+            console.log(textsum)
+            reply(reply_token, textsum)
+           return res.sendStatus(200)
+        }else{
+            return res.sendStatus(400)
+        }
+    }catch(err){
+        return res.sendStatus(500)
+    }
 })
 
 app.listen(process.env.PORT || 3000, function(){
@@ -65,23 +74,25 @@ async function aigen(msg) {
 
 
 function reply(reply_token, msg) {
-
-    let headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer {6RfAaySFER7u4talSDzOPxJPc6ndWPFXIfaEaVbny4tjBgnnUW/7mrO3uJL7KYQd9ToYkdjiUtd7dNJxt/OIICwTi9xjfDgvXog/cgn90NHQoGpz8vFFaLEsX3ec8k4w5aWeECh12tnxep9n47yqfgdB04t89/1O/w1cDnyilFU=}`
-    }
-    let body = JSON.stringify({
-        replyToken: reply_token,
-        messages: [{
-            type: 'text',
-            text: msg
-        }]
-    })
-    request.post({
-        url: 'https://api.line.me/v2/bot/message/reply',
-        headers: headers,
-        body: body
-    }, (err, res, body) => {
-        console.log('status = ' + res.statusCode);
-    });
+    
+        let headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer {6RfAaySFER7u4talSDzOPxJPc6ndWPFXIfaEaVbny4tjBgnnUW/7mrO3uJL7KYQd9ToYkdjiUtd7dNJxt/OIICwTi9xjfDgvXog/cgn90NHQoGpz8vFFaLEsX3ec8k4w5aWeECh12tnxep9n47yqfgdB04t89/1O/w1cDnyilFU=}`
+        }
+        let body = JSON.stringify({
+            replyToken: reply_token,
+            messages: [{
+                type: 'text',
+                text: msg
+            }]
+        })
+        request.post({
+            url: 'https://api.line.me/v2/bot/message/reply',
+            headers: headers,
+            body: body
+        }, (err, res, body) => {
+            console.log('status = ' + res.statusCode);
+        });
+    
+   
 }
