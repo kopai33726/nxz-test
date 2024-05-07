@@ -46,13 +46,13 @@ async function aigen(msg) {
                     if(i.partOfSpeech == 'noun' && checkNoun == true){
                         const randomarray = Math.floor(Math.random() * i.definitions.length);
                         const randomtext = i.definitions[randomarray].definition
-                        test += `Noun: ${randomtext}` 
+                        test += `Noun: ${randomtext}\n` 
                         checkNoun = false;
                     }
                     if(i.partOfSpeech == 'verb' && checkVerb == true){
                         const randomarray = Math.floor(Math.random() * i.definitions.length);
                         const randomtext = i.definitions[randomarray].definition
-                        test += `\nVerb: ${randomtext}` 
+                        test += `Verb: ${randomtext}\n` 
                         checkVerb = false;
                     }
                 })
